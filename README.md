@@ -1,12 +1,38 @@
 # Institutional DeFi Treasury Vault
 
+## Status
+
+This project includes:
+
+- Full smart contract system
+- Security-focused architecture
+- Oracle integration and validation
+- Reentrancy attack simulation
+- Comprehensive test suite
+- Threat model documentation
+
+---
+
 ## Overview
 
-This project implements a secure, modular, and extensible DeFi Treasury Vault system designed with a strong focus on security, risk control, and real-world attack scenarios.
+This project implements a secure, modular, and production-oriented DeFi Treasury Vault.
 
-The system allows users to deposit and withdraw ERC20 assets while enforcing strict validation rules, oracle-based pricing, and role-based permissions.
+It is designed to demonstrate how smart contracts should be built when handling real value, with a strong focus on security, architecture, and attack mitigation.
 
-The architecture is built to reflect production-level smart contract design, including separation of concerns, modular components, and explicit security controls.
+---
+
+## Quick Example
+
+1. Deploy contracts:
+npx hardhat run scripts/deploy.js
+
+2. Deposit tokens:
+User approves and deposits ERC20 asset
+
+3. Withdraw:
+After cooldown, user withdraws funds
+
+Security protections are enforced automatically
 
 ---
 
@@ -19,115 +45,80 @@ The architecture is built to reflect production-level smart contract design, inc
 - Withdrawal cooldown enforcement
 - Emergency pause / unpause mechanism
 - Modular contract architecture
-- Full unit test coverage
-- Reentrancy protection with active attack simulation
 
 ---
 
 ## Architecture
 
-The system is split into multiple components:
+The system is divided into multiple components:
 
-- **TreasuryVault.sol**  
-  Core contract handling deposits, withdrawals, and balances
+- `TreasuryVault.sol`  
+  Core vault logic (deposit, withdraw, balances)
 
-- **VaultAccessControl.sol**  
-  Role-based permission system
+- `VaultAccessControl.sol`  
+  Role-based permissions
 
-- **VaultConfig.sol**  
-  Asset configuration and limits
+- `VaultConfig.sol`  
+  Asset limits and configuration
 
-- **VaultOracleManager.sol**  
-  Oracle integration and price validation
+- `VaultOracleManager.sol`  
+  Oracle integration and validation
 
-- **MockVaultPriceOracle.sol**  
-  Simulated oracle for testing
+- `MockVaultPriceOracle.sol`  
+  Test oracle implementation
 
-- **ReentrantCallbackToken.sol**  
-  Malicious ERC20 token used for attack simulation
+- `ReentrantCallbackToken.sol`  
+  Malicious ERC20 used for attack simulation
 
-- **ReentrancyAttacker.sol**  
-  Attack contract used to simulate real-world reentrancy attacks
+- `ReentrancyAttacker.sol`  
+  Attack contract to simulate reentrancy
 
 ---
 
 ## Security Design
 
-This system is designed with a strong focus on smart contract security:
+This project is built with a strong security-first approach:
 
 ### Reentrancy Protection
-- Uses OpenZeppelin `ReentrancyGuard`
-- Attack simulation included using callback-based ERC20 token
-- Verified through automated test cases
+- OpenZeppelin `ReentrancyGuard`
+- Tested with real attack simulation
 
 ### Access Control
 - Role-based permissions via `AccessControl`
-- Critical functions restricted to specific roles
+- Restricted admin functions
 
 ### Oracle Validation
-- Prices must be valid and not stale
-- Deposits depend on oracle integrity
+- Rejects invalid prices
+- Rejects stale price data
 
 ### Input Validation
-- Zero checks
-- Min/max deposit enforcement
-- Supported asset validation
+- Min/max deposit checks
+- Zero value protection
+- Supported asset enforcement
 
 ### Emergency Controls
-- Pausable contract for emergency situations
+- Pause/unpause mechanism
 
 ---
 
 ## Threat Model
 
-The system considers and mitigates the following threats:
+See full threat model here:  
+`docs/threat-model.md`
+
+Includes:
 
 - Reentrancy attacks
-- Unauthorized access to privileged functions
-- Invalid or manipulated price feeds
-- Stale oracle data
-- Unsupported asset interaction
-- Excessive deposits or withdrawals
-- Rapid withdrawal exploitation
+- Oracle manipulation
+- Stale price risks
+- Unauthorized access
+- Deposit/withdraw abuse
 
 ---
 
-## Testing Strategy
+## Testing
 
-The project includes comprehensive test coverage:
+Run tests:
 
-- Deposit and withdrawal logic
-- Access control validation
-- Cooldown enforcement
-- Pause/unpause behavior
-- Oracle failure scenarios
-- Invalid price handling
-- Stale price rejection
-- Reentrancy attack simulation
-
----
-
-## Example Attack Scenario
-
-A custom ERC20 token (`ReentrantCallbackToken`) triggers a callback during transfer, allowing a malicious contract to attempt reentrant withdrawals.
-
-The system successfully prevents this attack using `ReentrancyGuard`.
-
----
-
-## Future Improvements
-
-- Multi-signature admin control
-- Timelock for critical operations
-- Integration with Chainlink Price Feeds
-- Upgradeable proxy architecture
-- Formal verification
-- On-chain monitoring integration
-
----
-
-## Conclusion
-
-This project demonstrates production-oriented smart contract development with a focus on security, architecture, and real-world attack mitigation.
-
-It is designed to reflect the expectations of high-level DeFi and blockchain engineering environments.
+```bash
+npx hardhat test
